@@ -1,1 +1,0 @@
-mandelMovie.o: mandelMovie.c
