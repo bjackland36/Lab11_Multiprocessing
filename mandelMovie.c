@@ -1,23 +1,42 @@
+/*
+File: mandelMovie.c
+Author: Blake Ackland
+Assignment: Lab 11 - Multiprocessing
+Course: CPE2600 - 131
+Instructor: Dr. Turney
+Date: 11/17/2026
+Description: This program repeatedly uses mandel.c to create mandelbroc
+             images to then be compiled together to make a movie. The
+             program takes the number of processes as an argument to
+             determine how many children processes will be used.
+Compile: gcc -Wall -g mandelMovie.c -o mandelMovie -lm
+Run: "./mandelMovie" or "./mandelMovie -p <processes>"
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
 #include <sys/wait.h>
 
+//Determine number of images to make from this program
 #define NUM_IMAGES 50
 
 void show_help();
 
 int main(int argc, char *argv[])
 {
+    //Initialize variables
     char c;
     pid_t pid;
+    char scale_str[32];
+    char file_str[32];
 
-    int max_processes = 1;
+    int max_processes = 1;  //Default processes = 1
     int active_processes = 0;
     double initial_scale = 4.0;
     double final_scale = 0.0005;
 
+    //Handle command-line args
     while ((c = getopt(argc, argv, "p:h")) != -1)
     {
         switch (c)
@@ -34,9 +53,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    //Handle command-line misinputs
     if (max_processes < 1)
+    {
         max_processes = 1;
+    }
 
+    //For every image...
     for (int i = 0; i < NUM_IMAGES; i++)
     {
         if (active_processes >= max_processes)
@@ -46,34 +69,44 @@ int main(int argc, char *argv[])
         }
 
         pid = fork();
-        if (pid < 0)
+        if (pid < 0) //Fork failed
         {
             perror("fork");
             exit(1);
         }
-        if (pid == 0)
-        {
-            char scale_str[32], file_str[32];
-            double scale = initial_scale *
-                pow(final_scale / initial_scale, (double)i / (NUM_IMAGES - 1));
 
+        if (pid == 0) //Child process
+        {
+            //Change scale geometrically based on the current image
+            double scale = initial_scale * pow(final_scale / initial_scale,
+                (double)i / (NUM_IMAGES - 1));
+
+            //Turn calculated scale and new image name into strings for argument
             snprintf(scale_str, sizeof(scale_str), "%.10f", scale);
             snprintf(file_str, sizeof(file_str), "mandel%d.jpg", i + 1);
 
-            char *args[] = {"./mandel", "-x", "-0.38", "-y", "-0.665",
-                            "-s", scale_str, "-m", "1000", "-o", file_str, NULL};
-            execv("./mandel", args);
-            perror("execv");
-            exit(1);
+            //Create args to invoke with ./mandel
+            char *args[] = {"./mandel", "-x", "-0.088", "-y", "0.654", "-s",
+                scale_str, "-m", "500", "-o", file_str, NULL};
+
+            //run ./mandel via this program
+            if (execv("./mandel", args) == -1)
+            {
+                perror("execv");
+                exit(1);
+            }
         }
+        //iterate active processes
         active_processes++;
     }
 
     while (active_processes > 0)
     {
         wait(NULL);
+        //decrement active processes
         active_processes--;
     }
+    //end program
     return 0;
 }
 
