@@ -1,12 +1,13 @@
 # Lab11_Multiprocessing
 Author: Blake Ackland
+
 Course: CPE2600 - 131
+
 Instructor: Dr. Turney
+
 Assignment: Lab 11 - Multiprocessing
 
-Last Update to README:
-
-11/18/2026 by Blake Ackland
+Last Update to README: 11/18/2026 by Blake Ackland
 
 ## Description of Program:
 This project generates a zoom movie of the Mandelbrot set using multiple processes. It has two programs:
