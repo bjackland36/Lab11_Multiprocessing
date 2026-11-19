@@ -61,7 +61,7 @@ The parent loops over the frames, forks a child for each, and the child runs `ex
 ### Graph
 Runtime to generate all 50 frames, measured for 1, 2, 5, 10, 20 & 50 children processes:
 
-!(runtime_graph.png)
+![](runtime_graph.png)
 
 ### Discussion of Results
 According to the graph, increasing the number of processes does not always mean the program will be faster. The result from 1-2 and 2-5 processes is about double the speed, but after that the addition of more processes reaches a point of diminishing returns. The jump from 5-10 processes is slightly under 1/2 reduction, and after that the program plateaus around 9.5 seconds.
