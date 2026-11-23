@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
             //Create args to invoke with ./mandel
             char *args[] = {"./mandel", "-x", "-0.088", "-y", "0.654", "-s",
-                scale_str, "-m", "500", "-o", file_str, NULL, "-t", thread_str};
+                scale_str, "-m", "500", "-o", file_str, "-t", thread_str, NULL};
 
             //run ./mandel via this program
             if (execv("./mandel", args) == -1)

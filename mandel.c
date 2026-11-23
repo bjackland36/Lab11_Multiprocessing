@@ -50,9 +50,6 @@ int main(int argc, char *argv[])
 	while((c = getopt(argc,argv,"t:x:y:s:W:H:m:o:h"))!=-1) {
 		switch(c) 
 		{
-			case 't':
-                max_threads = atoi(optarg);
-                break;
 			case 'x':
 				xcenter = atof(optarg);
 				break;
@@ -74,13 +71,15 @@ int main(int argc, char *argv[])
 			case 'o':
 				outfile = optarg;
 				break;
+			case 't':
+                max_threads = atoi(optarg);
+                break;
 			case 'h':
 				show_help();
 				exit(1);
 				break;
 		}
 	}
-
 	// Calculate y scale based on x scale (settable) and image sizes in X and Y (settable)
 	yscale = xscale / image_width * image_height;
 
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
 	setImageCOLOR(img,0);
 
 	// Compute the Mandelbrot image
-	compute_image(img,xcenter-xscale/2,xcenter+xscale/2,ycenter-yscale/2,ycenter+yscale/2,max, max_threads);
+	compute_image(img,xcenter-xscale/2,xcenter+xscale/2,ycenter-yscale/2,ycenter+yscale/2,max,max_threads);
 
 	// Save the image in the stated file.
 	storeJpegImageFile(img,outfile);
@@ -156,7 +155,8 @@ void compute_image(imgRawImage* img, double xmin, double xmax, double ymin,
 	int start = 0;
 	int plus_one = 0;
 
-	for (int t = 0; t < max_threads; t++) {
+	for (int t = 0; t < max_threads; t++)
+	{
 		if (t < remainder)
 		{
 			plus_one = 1;
@@ -165,7 +165,8 @@ void compute_image(imgRawImage* img, double xmin, double xmax, double ymin,
 
         args[t] = (thread_args){img, xmin, xmax, ymin, ymax, max, start, end};
 
-        if (pthread_create(&threads[t], NULL, compute_region, &args[t]) != 0) {
+        if (pthread_create(&threads[t], NULL, compute_region, &args[t]) != 0)
+		{
             perror("pthread_create");
             exit(1);
         }
@@ -173,7 +174,8 @@ void compute_image(imgRawImage* img, double xmin, double xmax, double ymin,
 		plus_one = 0;
     }
 
-    for (int t = 0; t < max_threads; t++) {
+    for (int t = 0; t < max_threads; t++)
+	{
         pthread_join(threads[t], NULL);
     }
 }
